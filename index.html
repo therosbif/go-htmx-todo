@@ -14,16 +14,23 @@
       type="text/css"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
     <title>Todo Htmx</title>
   </head>
-  <body>
+  <body hx-boost="true">
     <main class="max-w-screen-lg py-24 m-auto">
       <h1 class="text-3xl text-center">Awesome Todo App</h1>
       <ul id="todo-list" class="flex flex-col gap-2 p-5">
         {{ range .Todos }}
           {{ block "todo" . }}
-            <li class="flex gap-2 p-3 border-2 border-purple-500 rounded-md">
+            <li
+              class="flex items-center gap-2 p-3 border-2 border-purple-500 rounded-md group"
+            >
               <input
                 hx-trigger="change"
                 hx-post="/toggle-todo/{{ .ID }}"
@@ -35,6 +42,22 @@
                 {{ if .Done }}checked{{ end }}
               />
               <label for="done-{{ .ID }}">{{ .Title }}</label>
+              <i
+                hx-trigger="click"
+                hx-target="previous label[for='done-{{ .ID }}']"
+                hx-get="/edit/{{ .ID }}"
+                hx-swap="outerHTML"
+                class="hidden ml-auto cursor-pointer fa fa-edit text-slate-300 group-hover:block"
+              ></i>
+              <i
+                hx-trigger="click"
+                hx-delete="/todo/{{ .ID }}"
+                hx-target="closest li"
+                hx-confirm="Are you sure you want to delete task: '{{ .Title }}'?"
+                hx-swap="outerHTML"
+                class="hidden cursor-pointer text-rose-400 fa fa-trash group-hover:block"
+              >
+              </i>
             </li>
           {{ end }}
         {{ end }}
@@ -50,4 +73,18 @@
       </form>
     </main>
   </body>
+  <template>
+    {{ block "edit" . }}
+      <form hx-put="/todo/{{ .ID }}" hx-target="closest li" hx-swap="outerHTML">
+        <input
+          type="text"
+          name="title"
+          value="{{ .Title }}"
+          placeholder="{{ .Title }}"
+          autofocus
+          onfocus="this.select()"
+        />
+      </form>
+    {{ end }}
+  </template>
 </html>
