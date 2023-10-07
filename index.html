@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://unpkg.com/htmx.org@1.9.6"
+      integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@3.9.2/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Todo Htmx</title>
+  </head>
+  <body>
+    <main class="max-w-screen-lg py-24 m-auto">
+      <h1 class="text-3xl text-center">Awesome Todo App</h1>
+      <ul id="todo-list" class="flex flex-col gap-2 p-5">
+        {{ range .Todos }}
+          {{ block "todo" . }}
+            <li class="flex gap-2 p-3 border-2 border-purple-500 rounded-md">
+              <input
+                hx-trigger="change"
+                hx-post="/toggle-todo/{{ .ID }}"
+                hx-target="closest li"
+                hx-swap="outerHTML"
+                type="checkbox"
+                name="done-{{ .ID }}"
+                id="done-{{ .ID }}"
+                {{ if .Done }}checked{{ end }}
+              />
+              <label for="done-{{ .ID }}">{{ .Title }}</label>
+            </li>
+          {{ end }}
+        {{ end }}
+      </ul>
+      <form
+        hx-post="/add-todo"
+        hx-swap="beforeend"
+        hx-target="#todo-list"
+        class="flex justify-end gap-2"
+      >
+        <input type="text" name="title" class="self-center p-1" />
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    </main>
+  </body>
+</html>
