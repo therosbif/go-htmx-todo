@@ -41,6 +41,7 @@ func methodNotAllowed(w http.ResponseWriter) {
 }
 
 func main() {
+	id := 4
 	todos := []Todo{
 		{1, "Task 1", true},
 		{2, "Task 2", true},
@@ -57,7 +58,8 @@ func main() {
 	http.HandleFunc("/add-todo", func(w http.ResponseWriter, r *http.Request) {
 		title := r.PostFormValue("title")
 
-		todo := Todo{4, title, false}
+		todo := Todo{id, title, false}
+		id++
 		todos = append(todos, todo)
 		getTmpl("todo").Execute(w, todo)
 	})
